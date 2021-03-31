@@ -43,7 +43,7 @@
           v-bind:class="{show: isCalcTab, active: isCalcTab}"
           id="nav-calc" role="tabpanel" aria-labelledby="nav-home-tab"
         >
-          1...
+          <Calculation />
         </div>
         <div 
           class="tab-pane fade"
@@ -61,16 +61,15 @@
       </div>
     </div>
   </div>
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Calculation from './components/Calculation.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Calculation
   },
   data() {
     return {
@@ -92,8 +91,8 @@ export default {
 </script>
 
 <style lang="scss">
-#nav {
-  // padding-left: 30px;
-  background-color: #dbdbdb;
-}
+// #nav {
+//   // padding-left: 30px;
+//   background-color: #dbdbdb;
+// }
 </style>

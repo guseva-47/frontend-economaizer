@@ -5,6 +5,7 @@
       type="button" 
       class="btn btn-outline-success"
       id="back-button"
+      @click="backToDirectory"
     >
       - Назад
     </button>
@@ -44,13 +45,13 @@
 <script>
 export default {
   name: 'Direction',
-  props: {
-    // msg: String
-  },
+  props: ["backToDirectory"],
   data() {
     return {
     }
   },
+  methods: {
+  }
 }
 </script>
 

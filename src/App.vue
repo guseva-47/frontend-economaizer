@@ -56,7 +56,8 @@
           v-bind:class="{show: isProfileTab, active: isProfileTab}"
           id="nav-profile" role="tabpanel" aria-labelledby="nav-contact-tab"
         >
-            3...
+          <Profile />
+          <LoginForm v-if="false" :isValidLoginOrPassword="isValidLoginOrPassword"/>
         </div>
       </div>
     </div>
@@ -66,16 +67,21 @@
 <script>
 import Calculation from './components/Calculation.vue'
 import Directory from './components/Directory.vue'
+import Profile from './components/Profile.vue'
+import LoginForm from './components/LoginForm.vue'
 
 export default {
   name: 'App',
   components: {
     Calculation,
-    Directory
+    Directory,
+    Profile,
+    LoginForm
   },
   data() {
     return {
-      selected_tab_i: 1,
+      selected_tab_i: 0,
+      isValidLoginOrPassword: false
     }
   },
   computed: {
@@ -97,4 +103,5 @@ export default {
 //   // padding-left: 30px;
 //   background-color: #dbdbdb;
 // }
+
 </style>

@@ -1,13 +1,15 @@
 <template>
   <section id="section">
+    <div class="p-1">
     <button 
-        type="button" 
-        class="btn btn-outline-success"
-        id="back-buttom"
-      >
+      type="button" 
+      class="btn btn-outline-success"
+      id="back-button"
+    >
       - Назад
-      </button>
-    <div class="row align-items-end">
+    </button>
+    </div>
+    <div class="row align-items-end p-1">
       <p class="h1">Материалы</p>
     </div>
     
@@ -54,7 +56,7 @@ export default {
 
 <style lang="scss">
 
-#back-buttom{
+#back-button{
   padding: 1px; 
   padding-right: 20px;
   padding-left: 20px;

@@ -49,7 +49,7 @@
           class="tab-pane fade"
           v-bind:class="{show: isDirectTab, active: isDirectTab}"
           id="nav-direction" role="tabpanel" aria-labelledby="nav-profile-tab">
-            2...
+            <Directory/>
           </div>
         <div 
           class="tab-pane fade"
@@ -65,15 +65,17 @@
 
 <script>
 import Calculation from './components/Calculation.vue'
+import Directory from './components/Directory.vue'
 
 export default {
   name: 'App',
   components: {
-    Calculation
+    Calculation,
+    Directory
   },
   data() {
     return {
-      selected_tab_i: 0,
+      selected_tab_i: 1,
     }
   },
   computed: {

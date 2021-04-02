@@ -148,7 +148,7 @@ export default {
       // isUp: true--по возростанию, false--по убыванию
       isUp: false,
 
-      isNewCalc: true,
+      isNewCalc: false,
       isCalc: false,
 
     }

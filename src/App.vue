@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="">
     <nav>
       <div class="nav nav-tabs" id="nav" role="tablist">
         <div class="container-xxl d-flex flex-row">
@@ -36,7 +36,7 @@
         </div>
       </div>
     </nav>
-    <div class="" id="nav-tabContent">
+    <div  id="nav-tabContent">
       <div class="container-xxl tab-content">
         <div
           class="tab-pane fade"
@@ -104,4 +104,8 @@ export default {
 //   background-color: #dbdbdb;
 // }
 
+html, body {
+  margin: 0;
+  border: 0;
+}
 </style>

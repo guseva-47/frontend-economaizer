@@ -57,7 +57,7 @@ export default {
 
 <style lang="scss">
 
-#back-button{
+#back-button {
   padding: 1px; 
   padding-right: 20px;
   padding-left: 20px;

@@ -117,7 +117,10 @@ export default {
     editPassword() {
       this.edit_password = true;
       this.edit_profile = false;      
-    }
+    },
+    getTime() {
+      console.log(this.$store.getters.getTime);
+    },
 
   }
 }

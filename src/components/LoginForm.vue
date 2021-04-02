@@ -8,7 +8,7 @@
           <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Логин</label>
             <input 
-              type="email"
+              type="text"
               class="form-control"
               v-bind:class="{'is-invalid': isValidLoginOrPassword}"
               id="exampleInputEmail1"

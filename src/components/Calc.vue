@@ -2,11 +2,12 @@
   <section id="section">
     <div class="p-2">
     <button 
-        type="button" 
-        class="btn btn-outline-success"
-        id="back-button"
-      >
-      - Назад
+      type="button" 
+      class="btn btn-outline-success"
+      id="back-button"
+      @click="backToCalcs"
+    >
+    - Назад
     </button>
     </div>
     <div class="row align-items-end p-1">
@@ -81,9 +82,7 @@
 <script>
 export default {
   name: 'Calc',
-  props: {
-    // msg: String
-  },
+  props: ["backToCalcs"],
   data() {
     return {
     }

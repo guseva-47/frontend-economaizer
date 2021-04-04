@@ -82,7 +82,7 @@ const store = createStore({
             { id: 1, name: 'product 1', cipher: '10101', marriage: '2'},
             { id: 2, name: 'product 2', cipher: '202020', marriage: '1'},
           ],
-          material: [
+          materials: [
             {
               id: 1,
               cipher: 'm10101',

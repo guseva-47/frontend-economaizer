@@ -12,10 +12,10 @@
     </div>
     <div class="row align-items-end p-1">
       <div class="col-8">
-        <p class="h1">Название 1</p>
+        <p class="h1">{{calc.name}}</p>
       </div>
       <div class="col-4 text-end">
-        <p class="h3">01.02.2021-15.04.2020</p>
+        <p class="h3">{{calc.fromDate}}-{{calc.toDate}}</p>
       </div>
     </div>
     
@@ -36,17 +36,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Статья расходов 1</td>
-            <td>0201</td>
-            <td>200</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Статья расходов 2</td>
-            <td>0101</td>
-            <td>800</td>
+          <tr v-for="(stat, i) in calc.stati" :key="i">
+              <th scope="row">{{i}}</th>
+              <td>{{stat.name}}</td>
+              <td>{{stat.cipher}}</td>
+              <td>{{stat.cost}}</td>
           </tr>
         </tbody>
         <tfoot class="table-light">
@@ -69,6 +63,7 @@
         v-if="true"
         type="button" 
         class="btn btn-outline-success"
+        @click="updateCalc"
       >
         Редактировать
       </button>
@@ -82,11 +77,8 @@
 <script>
 export default {
   name: 'Calc',
-  props: ["backToCalcs"],
-  data() {
-    return {
-    }
-  },
+  props: ["backToCalcs", "calc", "updateCalc"],
+
 }
 </script>
 

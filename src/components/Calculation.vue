@@ -5,14 +5,14 @@
       иконка к кнопке Поиск
   -->
   <section id="section">
-    <div  v-if="!(isCalc || isNewCalc)">
+    <div  v-if="!(isCalc || isCreateOrUpdate)">
       <p class="h1 p-1">Плановые калькуляции</p>
       <!-- Кнопки -->
       <div class="d-grid gap-2 d-md-flex p-1">
         <button
           type="button"
           class="btn btn-outline-success"
-          @click="isNewCalc = true"
+          @click="isCreateOrUpdate = true"
         >
           + Новая калькуляция
         </button>
@@ -93,11 +93,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Название 1</td>
-              <td>01.02.2021</td>
-              <td>15.04.2020</td>
+            <tr v-for="(calc, i) in calculations" :key="i">
+              <th scope="row">{{i}}</th>
+              <td @click="showCalculation(calc)">{{calc.name}}</td>
+              <td>{{calc.fromDate}}</td>
+              <td>{{calc.toDate}}</td>
               <td>
                 <div class="dropdown">
                   <button class="btn btn-outline-secondary" data-bs-toggle="dropdown" style="padding-inline:3px;"> ⁝ </button>
@@ -108,31 +108,20 @@
                 </div>
               </td>
             </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Название 2</td>
-              <td>15.11.2020</td>
-              <td>01.09.2020</td>
-              <td>
-                <div class="dropdown">
-                  <button class="btn btn-outline-secondary" data-bs-toggle="dropdown" style="padding-inline:3px;"> ⁝ </button>
-                </div>
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <Calc v-if="isCalc" :backToCalcs="backToCalcs" />
-    <NewCalc v-if="isNewCalc" :backToCalcs="backToCalcs" />
+    <Calc v-if="isCalc" :backToCalcs="backToCalcs" :calc="calcToShow" :updateCalc="createOrUpdate" />
+    <NewCalc v-if="isCreateOrUpdate" :backToCalcs="backToCalcs" :calcToUpdate="calcToShow" />
     
   </section>
 </template>
 
 <script>
 import Calc from './Calc.vue'
-import NewCalc from './NewCalc'
+import NewCalc from './NewCalc.vue'
 
 export default {
   name: 'Calculation',
@@ -148,10 +137,16 @@ export default {
       // isUp: true--по возростанию, false--по убыванию
       isUp: false,
 
-      isNewCalc: false,
+      isCreateOrUpdate: true,
       isCalc: false,
-
+      calcToShow: null,
+      
+      calculations: null,
     }
+  },
+  created: async function() {
+    await this.getCalculations();
+    this.calculations = this.$store.state.calculations;
   },
   computed: {
     arrov() {
@@ -176,8 +171,22 @@ export default {
     },
     backToCalcs() {
       this.isCalc = false;
-      this.isNewCalc = false;
-    }
+      this.isCreateOrUpdate = false;
+      this.calcToShow = null;
+    },
+
+    showCalculation(calculation) { 
+      this.calcToShow = calculation;  
+      this.isCalc = true;
+    },
+    createOrUpdate() {
+      this.isCreateOrUpdate = true;
+      this.isCalc = false;
+    },
+
+    async getCalculations() {
+      await this.$store.dispatch('getCalculations');
+    },
   },
   
 }

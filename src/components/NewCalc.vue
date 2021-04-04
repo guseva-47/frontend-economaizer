@@ -16,33 +16,36 @@
 
     <!-- Название, от, до -->
     <div class="row g-3 align-items-center p-1">
+        <!-- Название плановой калькуляции -->
         <div class="mb-3 col-6 col-md-8">
           <label class="form-label">Название плановой калькуляции:</label>
           <input 
             type="text"
             class="form-control"
             placeholder="Название калькуляции"
-            v-model="nameCalc"
+            v-model="calc.nameCalc"
             v-bind:class="{'is-invalid': !isValidName}"
           >
         </div>
+        <!-- от -->
         <div class="mb-3 col-3 col-md-2">
           <label class="form-label">От:</label>
           <input 
             type="text"
             class="form-control"
             placeholder="ДД.ММ.ГГГГ"
-            v-model="dateFrom"
+            v-model="calc.dateFrom"
             v-bind:class="{'is-invalid': !isValidDate}"
           >
         </div>
+        <!-- до -->
         <div class="mb-3 col-3 col-md-2">
           <label class="form-label">До:</label>
           <input 
             type="text"
             class="form-control"
             placeholder="ДД.ММ.ГГГГ"
-            v-model="dateTo"
+            v-model="calc.dateTo"
             v-bind:class="{'is-invalid': !isValidDate}"
           >
         </div>
@@ -60,21 +63,36 @@
             <th scope="col">
               шифр
             </th>
+            <th colspan="2">процент брака</th>
           </tr>
         </thead>
+        <!-- TODO сохранить изделия и перейти к заполнению материалов и прочих статей затрат
+          подсветить дублирующиеся продукты и предложить удалить
+        -->
         <tbody>
-          <tr>
-            <th scope="row">1</th>
+          <tr v-for="(prod, i) in calc.products" :key="i">
+            <th scope="row">{{i+1}}</th>
             <td>
-              <select class="form-select" aria-label="Default select example">
-                <option  v-for="(opt, i) in options"  :key="i" :value="i" >{{opt}}</option>
+              <!-- Ок, id выбранного изделия добавляется в список. теперь нужно, чтобы добавлялся еще и в калькуляци, а затем отправлялся запрос на материалы -->
+              <select class="form-select" v-model="choisedProductsId[i]">
+                <option  v-for="(prod, i) in allProducts"  :key="i" :value="prod.id" >{{prod.name}}</option>
               </select>
             </td>
-            <td>0101</td>
+            <td>{{prod.cipher}}</td>
+            <td>{{prod.marriage}}</td>
+            <td class="text-end">
+              <button 
+                type="button"
+                class="btn btn-outline-danger"
+                @click="deleteProduct(i)"
+              >
+                x
+              </button>
+            </td>
           </tr>
           <tr>
             <th></th>
-            <td>
+            <td colspan="4">
               <button 
                 class="btn btn-outline-secondary" 
                 data-bs-toggle="tooltip" 
@@ -83,10 +101,9 @@
                 v-on:click="addRow"
                 id="add-button"
               >
-                +
+                + Изделие
               </button>
             </td>
-            <td></td>
           </tr>
         </tbody>
       </table>
@@ -110,64 +127,34 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">1</th>
+          <tr v-for="(material, i) in calc.materials" :key="i">
+            <th scope="row">{{i+1}}</th>
             <td>
-              Материал 1
+              {{material.name}}
             </td>
-            <td>0101</td>
+            <td>{{material.cipher}}</td>
             <td>
               <input 
                 type="text"
                 class="form-control"
                 placeholder="0.0"
+                v-model="material.cost"
               >
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+  
+    <p>{{materials}}</p>
+    <p>{{calc.materials}}</p>
 
-    <!-- Таблица стоимости по статьям затрат -->
-    <div class="p-1">
-      <table class="table table-hover">
-        <thead class="table-light">
-          <tr>
-            <th scope="col">№</th>
-            <th scope="col">
-              Статья затрат
-            </th>
-            <th scope="col">
-              шифр
-            </th>
-            <th scope="col">
-              стоимость
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>
-              <select class="form-select" aria-label="Default select example">
-                <option  v-for="(opt, i) in options"  :key="i" :value="i" >{{opt}}</option>
-              </select>
-            </td>
-            <td>0101</td>
-            <td>
-              <input 
-                type="text"
-                class="form-control"
-                placeholder="0.0"
-              >
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
 
     <!-- Кнопки -->
     <div class="d-grid gap-2 d-md-flex justify-content-end">
+      <button type="button" class="btn btn-outline-primary">
+        Отмена
+      </button>
       <button type="button" class="btn btn-outline-danger">
         Удалить
       </button>
@@ -187,26 +174,75 @@ import moment from 'moment'
 
 export default {
   name: 'Calc',
-  props: ["backToCalcs"],
+  props: ["backToCalcs", "calcToUpdate"],
   data() {
     return {
-      nameCalc: '',
-      dateFrom: moment().format("DD.MM.YYYY"),
-      dateTo: moment().add(1, 'month').format("DD.MM.YYYY"),
-      products: '',
-      needValidCheck: false,
 
-      options: ['Изделие 1', 'Изделие 2']
+      calc: {
+        id: -1,
+        nameCalc: '',
+        dateFrom: moment().format("DD.MM.YYYY"),
+        dateTo: moment().add(1, 'month').format("DD.MM.YYYY"),
+        marriage: 0,
+        products: [],
+        materials: []
+      },
+
+      needValidCheck: false,
+      // id изделий, выбранных пользователем для калькуляции
+      choisedProductsId: [],
+      allProducts: [],
+      flag: true,
     }
+  },
+  created: async function() {
+    await this.getProducts();
+    this.allProducts = this.$store.state.products;
+
+    if (this.calcToUpdate !== null) {
+      this.calc.nameCalc = this.calcToUpdate.name;
+      this.calc.dateFrom = this.calcToUpdate.fromDate;
+      this.calc.dateTo = this.calcToUpdate.toDate;
+      this.calc.products = this.calcToUpdate.products;
+      this.calc.materials = this.calcToUpdate.materials;
+      this.calc.marriage = this.calcToUpdate.marriage;
+    }
+    else {
+      this.calc.products = [
+        {
+          id: '',
+          names: '',
+          cipher: '',
+          marriage: ''
+        }
+      ]
+      this.calc.materials = []
+    }
+    this.calc.products.forEach(prod => this.choisedProductsId.push(prod.id))
   },
   computed: {
     isValidName() {
       if(!this.needValidCheck) return true;
-      return this.nameCalc.length > 0;
+      return this.calc.nameCalc.length > 0;
     },
     isValidDate() {
       if(!this.needValidCheck) return true;
-      return moment(this.dateFrom, 'DD.MM.YYYY') <= moment(this.dateTo, 'DD.MM.YYYY')
+      return moment(this.calc.dateFrom, 'DD.MM.YYYY') <= moment(this.calc.dateTo, 'DD.MM.YYYY')
+    },
+    materials() {
+      console.log('Обновление materials')
+      return this.choisedProductsId.filter(id => id !== '');
+    }
+  },
+  watch: {
+    materials: async function (newProductsId) {
+      console.log('WTCH 1')
+      console.log(this.calc.materials)
+      // TODO почему-то не уходит массив мтарых материалов
+      await this.getMaterials(newProductsId);
+
+      const newMaterials = this.$store.state.materials;
+      this.calc.materials = this.updateCost(newMaterials, this.calc.materials)
     }
   },
   methods: {
@@ -214,10 +250,44 @@ export default {
       this.needValidCheck = true;
       if (!(this.isValidName && this.isValidDate)) return;
       this.backToCalcs();
+
+      // отправить запрос на сервер с сохранением калькуляции
     },
     addRow() {
-      
-    }
+      this.choisedProductsId.push('');
+      this.calc.products.push(
+        {
+          id: '',
+          names: '',
+          cipher: '',
+          marriage: ''
+        }
+      ); 
+    },
+    updateCost(newMaterials, oldMaterials) {
+      if(!oldMaterials) return;
+
+      for(let i = 0; i < newMaterials.length; i++) {
+        oldMaterials.forEach(oldM => {
+          if(oldM.id == newMaterials[i].id) 
+            newMaterials[i].cost = oldM.cost
+        })
+      }
+      return newMaterials;
+    },
+    async deleteProduct(i) {
+      this.choisedProductsId.splice(i, 1);
+      this.calc.products.splice(i, 1);
+  
+    },
+    async getProducts() {
+      await this.$store.dispatch('getAllProducts');
+    },
+    async getMaterials(productsId) {
+      console.log('2')
+      this.$store.dispatch('getMaterials', productsId);
+    },
+
 
   }
 }

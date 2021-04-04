@@ -73,8 +73,11 @@
           <tr v-for="(prod, i) in calc.products" :key="i">
             <th scope="row">{{i+1}}</th>
             <td>
-              <!-- Ок, id выбранного изделия добавляется в список. теперь нужно, чтобы добавлялся еще и в калькуляци, а затем отправлялся запрос на материалы -->
-              <select class="form-select" v-model="choisedProductsId[i]">
+              <select 
+                class="form-select"
+                v-model="choisedProductsId[i]"
+                v-bind:class="{'is-invalid': !isValidProdct[i]}
+              ">
                 <option  v-for="(prod, i) in allProducts"  :key="i" :value="prod.id" >{{prod.name}}</option>
               </select>
             </td>
@@ -145,10 +148,6 @@
         </tbody>
       </table>
     </div>
-  
-    <p>{{materials}}</p>
-    <p>{{calc.materials}}</p>
-
 
     <!-- Кнопки -->
     <div class="d-grid gap-2 d-md-flex justify-content-end">
@@ -193,6 +192,7 @@ export default {
       choisedProductsId: [],
       allProducts: [],
       flag: true,
+      isValidProdct:[],
     }
   },
   created: async function() {
@@ -251,8 +251,8 @@ export default {
 
       const newMaterials = this.$store.state.materials;
       this.calc.materials = this.updateCost(newMaterials, this.calc.materials)
-      console.log('SSSSSSSSS')
-      console.log(newMaterials)
+
+      this.isValidProdct = this.isValidProducts(this.choisedProductsId);
     }
   },
   methods: {
@@ -285,20 +285,32 @@ export default {
       }
       return newMaterials;
     },
+    isValidProducts(arr) {
+      const result = arr.map(() => true);
+      console.log(result)
+      for(let i = arr.length - 1; i > 0; i--){
+        let isOk = true;
+        for(let j = i - 1; j >= 0 && isOk; j--)
+          if(arr[i] == arr[j]) {
+            result[i] = false;
+            isOk = false;
+          }
+      }
+      return result;
+    },
+
     async deleteProduct(i) {
       this.choisedProductsId.splice(i, 1);
       this.calc.products.splice(i, 1);
-  
     },
+
     async getProducts() {
       await this.$store.dispatch('getAllProducts');
     },
+
     async getMaterials(productsId) {
-      console.log('2')
       this.$store.dispatch('getMaterials', productsId);
     },
-
-
   }
 }
 </script>

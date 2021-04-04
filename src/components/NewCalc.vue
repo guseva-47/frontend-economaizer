@@ -237,12 +237,22 @@ export default {
   watch: {
     materials: async function (newProductsId) {
       console.log('WTCH 1')
-      console.log(this.calc.materials)
+
+      for(let i = 0; i < this.choisedProductsId.length; i++) {
+        let newProd = this.allProducts.find(item => item.id == this.choisedProductsId[i])
+        this.calc.products[i] = newProd;
+        if (!newProd) {          
+          this.choisedProductsId = [this.allProducts[0].id];
+          this.calc.products[i] = this.allProducts[0];
+        }
+      }
       // TODO почему-то не уходит массив мтарых материалов
       await this.getMaterials(newProductsId);
 
       const newMaterials = this.$store.state.materials;
       this.calc.materials = this.updateCost(newMaterials, this.calc.materials)
+      console.log('SSSSSSSSS')
+      console.log(newMaterials)
     }
   },
   methods: {
@@ -254,7 +264,7 @@ export default {
       // отправить запрос на сервер с сохранением калькуляции
     },
     addRow() {
-      this.choisedProductsId.push('');
+      this.choisedProductsId.push(this.allProducts[0].id);
       this.calc.products.push(
         {
           id: '',
@@ -265,7 +275,7 @@ export default {
       ); 
     },
     updateCost(newMaterials, oldMaterials) {
-      if(!oldMaterials) return;
+      if(!oldMaterials) return newMaterials;
 
       for(let i = 0; i < newMaterials.length; i++) {
         oldMaterials.forEach(oldM => {

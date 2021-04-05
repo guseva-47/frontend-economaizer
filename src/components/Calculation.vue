@@ -221,28 +221,23 @@ export default {
       this.isCalc = false;
     },
 
+    validDateOrNull(date) {
+      let resultDate = null;
+      if (date != ''){
+        resultDate = moment(date, 'DD.MM.YYYY', true).format();
+        this.isValid.fromDate = (resultDate != 'Invalid date');
+        resultDate = (this.isValid.fromDate) ? resultDate : null;
+      }
+    },
+
     searchCalcs() {
       this.calculations = this.$store.state.calculations;
-      
-      let fromDate = null;
-      let toDate = null;
 
-      if (this.serchData.fromDate != ''){
-        fromDate = moment(this.serchData.fromDate, 'DD.MM.YYYY', true).format();
-        this.isValid.fromDate = (fromDate != 'Invalid date');
-        fromDate = (this.isValid.fromDate) ? fromDate : null;
-      }
-      else {
-        this.isValid.fromDate = true;
-      }
-      if (this.serchData.toDate != ''){
-        toDate = moment(this.serchData.toDate, 'DD.MM.YYYY', true).format();
-        this.isValid.toDate = (toDate != 'Invalid date');
-        toDate = (this.isValid.toDate) ? toDate : null;
-      }
-      else {
-        this.isValid.toDate = true;
-      }
+      let fromDate = this.validDateOrNull(this.serchData.fromDate);
+      let toDate = this.validDateOrNull(this.serchData.toDate);
+
+      this.isValid.fromDate = (fromDate == null);
+      this.isValid.toDate = (toDate == null);
 
       const filteredCalcs = this.calculations.filter(calc => {
         let flag = calc.name.toLowerCase().includes(this.serchData.name.toLowerCase());

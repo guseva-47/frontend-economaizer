@@ -23,6 +23,13 @@
           >
             Изменить пароль
           </button>
+          <button
+            type="submit"
+            class="btn btn-outline-danger me-3"
+            @click="logout"
+          >
+            Выйти
+          </button>
         </form>
 
         <form v-if="edit_profile" class="p-1 col-6 col-lg-4">
@@ -95,12 +102,7 @@
 
 export default {
   name: 'Profile',
-  props: {
-    // msg: String
-  },
-  // components: {
-  //   OneDirection
-  // },
+  props: ["setUser"],
   data() {
     return {
       login: 'user_login',
@@ -118,6 +120,9 @@ export default {
       this.edit_password = true;
       this.edit_profile = false;      
     },
+    logout() {
+      this.setUser(null)
+    }
   }
 }
 </script>

@@ -6,9 +6,15 @@ import App from './App.vue'
 
 const store = createStore({
   state: {
+    userId : null,
+    user: {
+      login: '',
+      name: ''
+    },
     calculations: [],
     
     currentCalc: null,
+
 
     // Вид справочника, получаемого от сервера
     products: [
@@ -77,6 +83,13 @@ const store = createStore({
     setCurrentCalc(state, calculation) {
       state.currentCalc = calculation;
     },
+    setUserId(state, id) {
+      state.userId = id;
+    },
+    setUserData(state, userData) {
+      state.user.login = userData.login;
+      state.user.name = userData.name;
+    }
   },
   actions: {
     async getCalculations({ commit }) {
@@ -245,6 +258,18 @@ const store = createStore({
       
       commit('setMaterials', newMaterials);
     },
+
+    async getUserData({commit}) {
+
+      // имитация работы сервера отправляется id, возвращается лщгин и имя
+      const user ={
+        login: 'Login@login.ru',
+        name: 'Name Surname'
+      }
+      
+      commit('setUserData', user);
+    },
+
     async getCosts({commit}, productsId) {
 
       const deleteDuplicates = (arr) => {
@@ -284,11 +309,18 @@ const store = createStore({
       let newCosts = []
       productsId.forEach(prod => {
         if(prod != '')
-        newCosts.push(costsDirectory[prod - 1]);
+          newCosts.push(costsDirectory[prod - 1]);
       })
       
       
       commit('setCosts', newCosts);
+    },
+
+    async login({commit}, loginData) {
+      commit('setUserId', loginData.login);
+    },
+    async logout({commit}) {
+      commit('setUserId', null);
     },
   }
 })

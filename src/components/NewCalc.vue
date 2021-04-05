@@ -322,7 +322,7 @@ export default {
     },
     isValidDate() {
       if(!this.needValidCheck) return true;
-      return moment(this.calc.fromDate, 'DD.MM.YYYY') <= moment(this.calc.toDate, 'DD.MM.YYYY')
+      return moment(this.calc.fromDate, 'DD.MM.YYYY', true).format() <= moment(this.calc.toDate, 'DD.MM.YYYY', true).format()
     },
     materials() {
       return this.choisedProductsId.filter(id => id !== '');

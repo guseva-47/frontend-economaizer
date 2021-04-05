@@ -31,29 +31,38 @@
             <label for="inputPassword6" class="col-form-label">Название:</label>
           </div>
           <div class="col-3">
-            <input type="text" id="inputPassword6" class="form-control" placeholder="Название калькуляции">
+            <input v-model="serchData.name" type="text" class="form-control" placeholder="Название калькуляции">
           </div>
 
           <div class="col-auto text-end">
             <label for="inputPassword6" class="col-form-label">От:</label>
           </div>
           <div class="col-2">
-            <input type="text" id="inputPassword6" class="form-control text-center" placeholder="ДД.ММ.ГГГГ">
+            <input 
+              v-model="serchData.fromDate"
+              type="text" 
+              class="form-control"
+              v-bind:class="{'is-invalid': !isValid.fromDate}"
+              placeholder="ДД.ММ.ГГГГ" />
           </div>
 
           <div class="col-auto text-end">
             <label for="inputPassword6" class="col-form-label">До:</label>
           </div>
           <div class="col-2">
-            <input type="text" id="inputPassword6" class="form-control text-center" placeholder="ДД.ММ.ГГГГ">
+            <input 
+              v-model="serchData.toDate"
+              type="text" class="form-control"
+              v-bind:class="{'is-invalid': !isValid.toDate}"
+              placeholder="ДД.ММ.ГГГГ" />
           </div>
 
           <div class="col-auto btn-group">
             <!-- TODO -->
-            <button type="button" class="btn btn-outline-primary">
+            <button type="button" class="btn btn-outline-primary" @click="searchCalcs">
               Найти
             </button>
-            <button type="button" class="btn btn-outline-warning">
+            <button type="button" class="btn btn-outline-warning" @click="cleanSerchForm">
               Сбросить
             </button>
           </div>
@@ -98,7 +107,7 @@
           </thead>
           <tbody>
             <tr v-for="(calc, i) in calculations" :key="i">
-              <th scope="row">{{i}}</th>
+              <th scope="row">{{i+1}}</th>
               <td @click="showCalculation(calc)">{{calc.name}}</td>
               <td>{{calc.fromDate}}</td>
               <td>{{calc.toDate}}</td>
@@ -124,6 +133,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 import Calc from './Calc.vue'
 import NewCalc from './NewCalc.vue'
 
@@ -136,6 +147,10 @@ export default {
   data() {
     return {
       search_form: false,
+      isValid: {
+        fromDate: true,
+        toDate: true
+      },
       // colomnSort: 1--по имени, 2--дата "от",  3--дата "до"
       colomnSort: 2,
       // isUp: true--по возростанию, false--по убыванию
@@ -146,11 +161,21 @@ export default {
       calcToShow: null,
       
       calculations: null,
+
+      serchData: {
+        name: '',
+        fromDate: '',
+        toDate: ''
+      }
     }
   },
   created: async function() {
     await this.getCalculations();
     this.calculations = this.$store.state.calculations;
+    this.isValid = {
+      fromDate: true,
+      toDate: true
+    }
   },
   computed: {
     arrov() {
@@ -194,6 +219,49 @@ export default {
     createOrUpdate() {
       this.isCreateOrUpdate = true;
       this.isCalc = false;
+    },
+
+    searchCalcs() {
+      this.calculations = this.$store.state.calculations;
+      
+      let fromDate = null;
+      let toDate = null;
+
+      if (this.serchData.fromDate != ''){
+        fromDate = moment(this.serchData.fromDate, 'DD.MM.YYYY', true).format();
+        this.isValid.fromDate = (fromDate != 'Invalid date');
+        fromDate = (this.isValid.fromDate) ? fromDate : null;
+      }
+      else {
+        this.isValid.fromDate = true;
+      }
+      if (this.serchData.toDate != ''){
+        toDate = moment(this.serchData.toDate, 'DD.MM.YYYY', true).format();
+        this.isValid.toDate = (toDate != 'Invalid date');
+        toDate = (this.isValid.toDate) ? toDate : null;
+      }
+      else {
+        this.isValid.toDate = true;
+      }
+
+      const filteredCalcs = this.calculations.filter(calc => {
+        let flag = calc.name.toLowerCase().includes(this.serchData.name.toLowerCase());
+        if (flag && fromDate)
+          flag = flag && (moment(calc.fromDate, 'DD.MM.YYYY', true).format() == fromDate);
+        if (flag && toDate)
+          flag = flag && (moment(calc.toDate, 'DD.MM.YYYY', true).format() == toDate);
+        return flag;
+      })
+      this.calculations = filteredCalcs;
+    },
+
+    cleanSerchForm() {
+      this.serchData.name = '';
+      this.serchData.fromDate = '';
+      this.serchData.toDate = '';
+      this.calculations = this.$store.state.calculations;
+      this.isValid.fromDate = true;
+      this.isValid.toDate = true;
     },
 
     async getCalculations() {

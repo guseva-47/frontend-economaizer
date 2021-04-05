@@ -5,13 +5,14 @@
       type="button" 
       class="btn btn-outline-success"
       id="back-button"
-      @click="backToCalcs"
+      @click="backToAllCalcs"
     >
-    - Назад
+    ← Назад
     </button>
     </div>
     <div class="row p-1">
-      <p class="h1">Новая плановая калькуляция</p>
+      <p class="h1" v-if="calcToUpdate">Редактировать плановую калькуляцию</p>
+      <p class="h1" v-else>Новая плановая калькуляция</p>
     </div>
 
     <!-- Название, от, до -->
@@ -23,7 +24,7 @@
             type="text"
             class="form-control"
             placeholder="Название калькуляции"
-            v-model="calc.nameCalc"
+            v-model="calc.name"
             v-bind:class="{'is-invalid': !isValidName}"
           >
         </div>
@@ -34,7 +35,7 @@
             type="text"
             class="form-control"
             placeholder="ДД.ММ.ГГГГ"
-            v-model="calc.dateFrom"
+            v-model="calc.fromDate"
             v-bind:class="{'is-invalid': !isValidDate}"
           >
         </div>
@@ -45,7 +46,7 @@
             type="text"
             class="form-control"
             placeholder="ДД.ММ.ГГГГ"
-            v-model="calc.dateTo"
+            v-model="calc.toDate"
             v-bind:class="{'is-invalid': !isValidDate}"
           >
         </div>
@@ -66,9 +67,6 @@
             <th colspan="2">процент брака</th>
           </tr>
         </thead>
-        <!-- TODO сохранить изделия и перейти к заполнению материалов и прочих статей затрат
-          подсветить дублирующиеся продукты и предложить удалить
-        -->
         <tbody>
           <tr v-for="(prod, i) in calc.products" :key="i">
             <th scope="row">{{i+1}}</th>
@@ -149,12 +147,49 @@
       </table>
     </div>
 
+    <!-- Таблица стоимости заработных плат -->
+    <div class="p-1">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">№</th>
+            <th scope="col">
+              Зароботная плата
+            </th>
+            <th scope="col">
+              шифр
+            </th>
+            <th scope="col">
+              стоимость
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(cost, i) in calc.costs" :key="i">
+            <th scope="row">{{i+1}}</th>
+            <td>
+              {{cost.name}}
+            </td>
+            <td>{{cost.cipher}}</td>
+            <td>
+              <input 
+                type="text"
+                class="form-control"
+                placeholder="0.0"
+                v-model="cost.cost"
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Кнопки -->
     <div class="d-grid gap-2 d-md-flex justify-content-end">
-      <button type="button" class="btn btn-outline-primary">
-        Отмена
+      <button type="button" class="btn btn-outline-primary" @click="cancelChanges">
+        Отменить изменения
       </button>
-      <button type="button" class="btn btn-outline-danger">
+      <button type="button" class="btn btn-outline-danger" @click="deleteCalc">
         Удалить
       </button>
       <button 
@@ -170,73 +205,65 @@
 
 <script>
 import moment from 'moment'
+import rfdc from 'rfdc'
+
+const clone = rfdc()
 
 export default {
   name: 'Calc',
-  props: ["backToCalcs", "calcToUpdate"],
+  props: ["backToAllCalcs", "backToCalc", "calcToUpdate"],
   data() {
     return {
 
       calc: {
         id: -1,
-        nameCalc: '',
-        dateFrom: moment().format("DD.MM.YYYY"),
-        dateTo: moment().add(1, 'month').format("DD.MM.YYYY"),
+        name: '',
+        fromDate: moment().format("DD.MM.YYYY"),
+        toDate: moment().add(1, 'month').format("DD.MM.YYYY"),
         marriage: 0,
         products: [],
-        materials: []
+        materials: [],
+        costs: [],
       },
 
       needValidCheck: false,
       // id изделий, выбранных пользователем для калькуляции
       choisedProductsId: [],
       allProducts: [],
-      flag: true,
       isValidProdct:[],
     }
   },
   created: async function() {
+    
     await this.getProducts();
     this.allProducts = this.$store.state.products;
 
     if (this.calcToUpdate !== null) {
-      this.calc.nameCalc = this.calcToUpdate.name;
-      this.calc.dateFrom = this.calcToUpdate.fromDate;
-      this.calc.dateTo = this.calcToUpdate.toDate;
-      this.calc.products = this.calcToUpdate.products;
-      this.calc.materials = this.calcToUpdate.materials;
-      this.calc.marriage = this.calcToUpdate.marriage;
+      this.calc = clone(this.calcToUpdate);
     }
     else {
-      this.calc.products = [
-        {
-          id: '',
-          names: '',
-          cipher: '',
-          marriage: ''
-        }
-      ]
+      this.calc.id = -1;
+      this.calc.products = []
       this.calc.materials = []
+      this.calc.costs = []
     }
     this.calc.products.forEach(prod => this.choisedProductsId.push(prod.id))
   },
   computed: {
     isValidName() {
       if(!this.needValidCheck) return true;
-      return this.calc.nameCalc.length > 0;
+      return this.calc.name.length > 0;
     },
     isValidDate() {
       if(!this.needValidCheck) return true;
-      return moment(this.calc.dateFrom, 'DD.MM.YYYY') <= moment(this.calc.dateTo, 'DD.MM.YYYY')
+      return moment(this.calc.fromDate, 'DD.MM.YYYY') <= moment(this.calc.toDate, 'DD.MM.YYYY')
     },
     materials() {
-      console.log('Обновление materials')
       return this.choisedProductsId.filter(id => id !== '');
     }
   },
   watch: {
     materials: async function (newProductsId) {
-      console.log('WTCH 1')
 
       for(let i = 0; i < this.choisedProductsId.length; i++) {
         let newProd = this.allProducts.find(item => item.id == this.choisedProductsId[i])
@@ -246,22 +273,37 @@ export default {
           this.calc.products[i] = this.allProducts[0];
         }
       }
-      // TODO почему-то не уходит массив мтарых материалов
       await this.getMaterials(newProductsId);
+      await this.getCosts(newProductsId);
 
       const newMaterials = this.$store.state.materials;
-      this.calc.materials = this.updateCost(newMaterials, this.calc.materials)
+      const newCosts = this.$store.state.costs;
+      this.calc.materials = this.updateCost(newMaterials, this.calc.materials);
+      this.calc.costs = this.updateCost(newCosts, this.calc.costs)
 
-      this.isValidProdct = this.isValidProducts(this.choisedProductsId);
+      this.isValidProdct = this.updateValidProd(this.choisedProductsId);
     }
   },
   methods: {
-    saveCalc() {
+    async deleteCalc() {
+      // отправить запрос на сервер с просьбой удлаить
+      // отправить запрос с получением нового списка калькуляций
+      // вернуться ко всем калькуляциям
+      // todo
+      this.backToAllCalcs();
+    },
+    async saveCalc() {
       this.needValidCheck = true;
       if (!(this.isValidName && this.isValidDate)) return;
-      this.backToCalcs();
+      if (this.isValidProdct.includes(false)) return;
+      this.backToAllCalcs();
 
       // отправить запрос на сервер с сохранением калькуляции
+      // получить сохраненную калькуляцию от сервера
+      // todo
+
+      // передать калькуляцию в форму
+      this.backToCalc(this.calc);
     },
     addRow() {
       this.choisedProductsId.push(this.allProducts[0].id);
@@ -285,9 +327,8 @@ export default {
       }
       return newMaterials;
     },
-    isValidProducts(arr) {
+    updateValidProd(arr) {
       const result = arr.map(() => true);
-      console.log(result)
       for(let i = arr.length - 1; i > 0; i--){
         let isOk = true;
         for(let j = i - 1; j >= 0 && isOk; j--)
@@ -311,6 +352,30 @@ export default {
     async getMaterials(productsId) {
       this.$store.dispatch('getMaterials', productsId);
     },
+    async getCosts(productsId) {
+      this.$store.dispatch('getCosts', productsId);
+    },
+
+    cancelChanges() {
+      if (this.calcToUpdate !== null) {
+        this.calc = clone(this.calcToUpdate);
+      }
+      else {
+        this.calc.id = -1;
+        this.calc.name = '';
+        this.calc.fromDate = '';
+        this.calc.toDate = '';
+        this.calc.products = '';
+        this.calc.materials = [];
+        this.calc.costs = [];
+        this.calc.marriage = '';
+        this.calc.products = [];
+      }
+      this.choisedProductsId = [];
+      this.calc.products.forEach(prod => this.choisedProductsId.push(prod.id))
+      this.needValidCheck = false;
+      this.isValidProdct = this.updateValidProd(this.choisedProductsId);
+    }
   }
 }
 </script>

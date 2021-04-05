@@ -48,9 +48,13 @@
             <input type="text" id="inputPassword6" class="form-control text-center" placeholder="ДД.ММ.ГГГГ">
           </div>
 
-          <div class="col-auto">
-            <button type="button" class="btn btn-outline-success">
+          <div class="col-auto btn-group">
+            <!-- TODO -->
+            <button type="button" class="btn btn-outline-primary">
               Найти
+            </button>
+            <button type="button" class="btn btn-outline-warning">
+              Сбросить
             </button>
           </div>
         </div>
@@ -113,8 +117,8 @@
       </div>
     </div>
 
-    <Calc v-if="isCalc" :backToCalcs="backToCalcs" :calc="calcToShow" :updateCalc="createOrUpdate" />
-    <NewCalc v-if="isCreateOrUpdate" :backToCalcs="backToCalcs" :calcToUpdate="calcToShow" />
+    <Calc v-if="isCalc" :backToAllCalcs="backToAllCalcs" :calc="calcToShow" :updateCalc="createOrUpdate" />
+    <NewCalc v-if="isCreateOrUpdate" :backToAllCalcs="backToAllCalcs" :backToCalc="backToCalc" :calcToUpdate="calcToShow" />
     
   </section>
 </template>
@@ -169,16 +173,24 @@ export default {
 
       // TODO Собственно сортировка
     },
-    backToCalcs() {
+
+    backToAllCalcs() {
       this.isCalc = false;
       this.isCreateOrUpdate = false;
       this.calcToShow = null;
     },
 
+    backToCalc(calc) {
+      this.isCalc = true;
+      this.isCreateOrUpdate = false;
+      this.calcToShow = calc;
+    },
+
     showCalculation(calculation) { 
-      this.calcToShow = calculation;  
+      this.calcToShow = calculation;
       this.isCalc = true;
     },
+
     createOrUpdate() {
       this.isCreateOrUpdate = true;
       this.isCalc = false;

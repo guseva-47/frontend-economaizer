@@ -7,6 +7,8 @@ import App from './App.vue'
 const store = createStore({
   state: {
     calculations: [],
+    
+    currentCalc: null,
 
     // Вид справочника, получаемого от сервера
     products: [
@@ -25,10 +27,7 @@ const store = createStore({
       cost: '',
     },
 
-    zp: {
-      id: '',
-      cost: '',
-    },
+    costs: [],
 
     profile: {
       login: 'user_login',
@@ -67,20 +66,28 @@ const store = createStore({
     },
     setMaterials(state, materials) {
       state.materials = materials;
-    }
+    },
+    setCosts(state, costs) {
+      state.costs = costs;
+    },
+    setCurrentCalc(state, calculation) {
+      state.currentCalc = calculation;
+    },
   },
   actions: {
     async getCalculations({ commit }) {
       // c -- результат запроса к серверу
       const c = [
         {
+          id: '11111',
           name: 'name of calc 1',
           fromDate: '01.02.2021',
-          toDate: '15.04.2020',
+          toDate: '15.04.2021',
           marriage: 2,
           products: [
-            { id: 1, name: 'product 1', cipher: '10101', marriage: '2'},
-            { id: 2, name: 'product 2', cipher: '202020', marriage: '1'},
+            { id: 3, name: 'product 3', cipher: '33320', marriage: 13},
+            { id: 1, name: 'product 1', cipher: '101010', marriage: 2 },
+            { id: 2, name: 'product 2', cipher: '202020', marriage: 1},
           ],
           materials: [
             {
@@ -93,6 +100,20 @@ const store = createStore({
               id: 2,
               cipher: 'm20202',
               name: 'material 2',
+              cost: 300
+            }
+          ],
+          cost: [
+            {
+              id: 1,
+              cipher: 'cost10101',
+              name: 'cost10101 1',
+              cost: 200
+            },
+            {
+              id: 2,
+              cipher: 'cost10101',
+              name: 'cost10101 2',
               cost: 300
             }
           ],
@@ -146,7 +167,6 @@ const store = createStore({
           marriage: 3
         },
       ]
-      console.log('STORE get all prod')
       commit('setProducts', prod);
     },
 
@@ -192,12 +212,54 @@ const store = createStore({
           newMaterials.push(materialsDirectory[prod - 1]);
       })
       
-      console.log(`STORE \nnew materials = `)
-      console.log(newMaterials)
       
       commit('setMaterials', newMaterials);
     },
+    async getCosts({commit}, productsId) {
 
+      const deleteDuplicates = (arr) => {
+        arr = arr.slice();
+        for(let i = 0; i < arr.length - 1; i++)
+          if (arr[i] != -1)
+            for(let j = i + 1; j < arr.length; j++)
+              if (arr[i] == arr[j]) arr[j] = -1;
+  
+        return arr.filter(item => !(item == -1 || item == ''));
+      }
+      productsId = deleteDuplicates(productsId);
+      
+      // имитация работы сервера
+      const costsDirectory = [
+        {
+          id: 1,
+          cipher: 'c10101',
+          name: 'cost 1',
+        },
+        {
+          id: 2,
+          cipher: 'c20202',
+          name: 'cost 2',
+        },
+        {
+          id: 3,
+          cipher: 'c303003',
+          name: 'cost 3',
+        },
+        {
+          id: 4,
+          cipher: 'c04040',
+          name: 'cost 4',
+        },
+      ]
+      let newCosts = []
+      productsId.forEach(prod => {
+        if(prod != '')
+        newCosts.push(costsDirectory[prod - 1]);
+      })
+      
+      
+      commit('setCosts', newCosts);
+    },
   }
 })
 

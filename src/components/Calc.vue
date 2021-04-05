@@ -5,9 +5,9 @@
       type="button" 
       class="btn btn-outline-success"
       id="back-button"
-      @click="backToCalcs"
+      @click="backToAllCalcs"
     >
-    - Назад
+    ← Назад
     </button>
     </div>
     <div class="row align-items-end p-1">
@@ -77,7 +77,7 @@
 <script>
 export default {
   name: 'Calc',
-  props: ["backToCalcs", "calc", "updateCalc"],
+  props: ["backToAllCalcs", "calc", "updateCalc"],
 
 }
 </script>

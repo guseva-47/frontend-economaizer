@@ -7,7 +7,7 @@
       id="back-button"
       @click="backToDirectory"
     >
-      - Назад
+      ← Назад
     </button>
     </div>
     <div class="row align-items-end p-1">

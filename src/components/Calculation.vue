@@ -141,7 +141,7 @@ export default {
       // isUp: true--по возростанию, false--по убыванию
       isUp: false,
 
-      isCreateOrUpdate: true,
+      isCreateOrUpdate: false,
       isCalc: false,
       calcToShow: null,
       

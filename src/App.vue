@@ -61,6 +61,7 @@
         </div>
       </div>
     </div>
+    <footer/>
   </div>
 </template>
 
@@ -107,5 +108,8 @@ export default {
 html, body {
   margin: 0;
   border: 0;
+}
+footer {
+  padding: 10px;
 }
 </style>

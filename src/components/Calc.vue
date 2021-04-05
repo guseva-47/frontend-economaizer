@@ -36,11 +36,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(stat, i) in calc.stati" :key="i">
+          <tr v-for="(costItem, i) in calc.costItems" :key="i">
               <th scope="row">{{i}}</th>
-              <td>{{stat.name}}</td>
-              <td>{{stat.cipher}}</td>
-              <td>{{stat.cost}}</td>
+              <td>{{costItem.name}}</td>
+              <td>{{costItem.cipher}}</td>
+              <td>{{costItem.cost}}</td>
           </tr>
         </tbody>
         <tfoot class="table-light">

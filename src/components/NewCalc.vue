@@ -154,7 +154,7 @@
           <tr>
             <th scope="col">№</th>
             <th scope="col">
-              Зароботная плата
+              Заработная плата
             </th>
             <th scope="col">
               шифр
@@ -208,7 +208,7 @@
               <select 
                 class="form-select"
                 v-model="choisedCostItemsId[i]"
-                v-bind:class="{'is-invalid': !isValidCostItems[i]}
+                v-bind:class="{'is-warning': !isValidCostItems[i]}
               ">
                 <option  v-for="(ci, i) in allCostItems"  :key="i" :value="ci.id" >{{ci.name}}</option>
               </select>
@@ -219,7 +219,7 @@
                 type="text"
                 class="form-control"
                 placeholder="0.0"
-                v-model="costItem.cost"
+                v-model="costItemsCost[i]"
               >
             </td>
             <td class="text-end">
@@ -302,7 +302,7 @@ export default {
       choisedCostItemsId: [],
       isValidProdct:[],
       isValidCostItems:[],
-      // costItemsCost: []
+      costItemsCost: []
     }
   },
   created: async function() {
@@ -376,6 +376,9 @@ export default {
       this.needValidCheck = true;
       if (!(this.isValidName && this.isValidDate)) return;
       if (this.isValidProdct.includes(false)) return;
+      // todo можно ли пропускать одинаковые статьи затрат? 
+        // если нельзя то разкоментировать проверку
+      // if (this.isValidCostItems.includes(false)) return;
       this.backToAllCalcs();
 
       // отправить запрос на сервер с сохранением калькуляции
@@ -393,7 +396,7 @@ export default {
       // todo мб нужно все-таки разрешать несколько одинаковых статей затрат и суммировать, если статьи повторяются
       // тогда надо заводить отдельный массив стоимостей по статьям затрат, слдить за ним не нужно, только добавлять 
       const newCost = this.allCostItems[0];
-      if(newCost.cost === undefined) newCost.cost = 0;
+      this.costItemsCost.push(0);
       this.choisedCostItemsId.push(newCost.id);
       this.calc.costItems.push(newCost);
     },
@@ -427,6 +430,7 @@ export default {
     },
     deleteCostItem(i) {
       this.choisedCostItemsId.splice(i, 1);
+      this.costItemsCost.splice(i, 1);
       this.calc.costItems.splice(i, 1);
     },
 
@@ -448,6 +452,7 @@ export default {
     cancelChanges() {
       this.initCalc(this.calcToUpdate);
     },
+
     initCalc(originalCalc) {
       if (originalCalc !== null) {
         this.calc = clone(originalCalc);
@@ -467,7 +472,10 @@ export default {
       this.choisedProductsId = [];
       this.choisedCostItemsId = [];
       this.calc.products.forEach(prod => this.choisedProductsId.push(prod.id))
-      this.calc.costItems.forEach(item => this.choisedCostItemsId.push(item.id));
+      this.calc.costItems.forEach(item => {
+        this.choisedCostItemsId.push(item.id);
+        this.costItemsCost.push(item.cost);
+      });
       this.needValidCheck = false;
       this.isValidProdct = this.isValidArr(this.choisedProductsId);
       this.isValidCostItems = this.isValidArr(this.choisedCostItemsId);
@@ -493,5 +501,9 @@ export default {
 .pad-b {
   padding-top: 10pt;
 }
-
+// 
+.is-warning {
+  border-width: 2px;
+  border-color: gold;
+}
 </style>

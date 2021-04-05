@@ -122,7 +122,7 @@ const store = createStore({
             }
           ],
           costItems: [
-            { id: 2, name: 'сostItem 2', cipher: '020202' },
+            { id: 2, name: 'сostItem 2', cipher: '020202', cost: 999 },
             { id: 3, name: 'сostItem 3', cipher: '030303' },
           ]
         },

@@ -195,6 +195,28 @@ export default {
     sortCalcsItems(colI) {
       if (this.colomnSort == colI) this.isUp = !this.isUp;
       this.colomnSort = colI;
+      const compare = (a, b) => {
+        if (a === b) return 0;
+        if (this.isUp) return (a > b) ? 1 : -1
+        return (a < b) ? 1 : -1
+      }
+      if(this.isName) {
+        this.calculations.sort((a, b) => compare(a.name, b.name))
+      }
+      if(this.isFrom) {
+        this.calculations.sort((a, b) => {
+          a = moment(a.fromDate, 'DD.MM.YYYY', true).format();
+          b = moment(b.fromDate, 'DD.MM.YYYY', true).format()
+          return compare(a, b);
+        })
+      }
+      if(this.isTo) {
+        this.calculations.sort((a, b) => {
+          a = moment(a.toDate, 'DD.MM.YYYY', true).format();
+          b = moment(b.toDate, 'DD.MM.YYYY', true).format()
+          return compare(a, b);
+        })
+      }
 
       // TODO Собственно сортировка
     },

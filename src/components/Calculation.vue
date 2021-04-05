@@ -156,7 +156,7 @@ export default {
       // isUp: true--по возростанию, false--по убыванию
       isUp: false,
 
-      isCreateOrUpdate: false,
+      isCreateOrUpdate: true,
       isCalc: false,
       calcToShow: null,
       
@@ -250,6 +250,7 @@ export default {
         this.isValid.fromDate = (resultDate != 'Invalid date');
         resultDate = (this.isValid.fromDate) ? resultDate : null;
       }
+      return resultDate; 
     },
 
     searchCalcs() {
@@ -258,8 +259,13 @@ export default {
       let fromDate = this.validDateOrNull(this.serchData.fromDate);
       let toDate = this.validDateOrNull(this.serchData.toDate);
 
-      this.isValid.fromDate = (fromDate == null);
-      this.isValid.toDate = (toDate == null);
+      if (this.serchData.fromDate != '')
+        this.isValid.fromDate = !(fromDate == null);
+      else this.isValid.fromDate = true;
+
+      if (this.serchData.toDate != '')
+        this.isValid.toDate = !(toDate == null);
+      else this.isValid.toDate = true;
 
       const filteredCalcs = this.calculations.filter(calc => {
         let flag = calc.name.toLowerCase().includes(this.serchData.name.toLowerCase());

@@ -1,117 +1,124 @@
 <template>
-  <section id="section">
-    <div class="p-2">
-    <button 
-      type="button" 
-      class="btn btn-outline-success"
-      id="back-button"
-      @click="backToAllCalcs"
-    >
-    ← Назад
-    </button>
-    </div>
-    <div class="row p-1">
-      <p class="h1" v-if="calcToUpdate">Редактировать плановую калькуляцию</p>
-      <p class="h1" v-else>Новая плановая калькуляция</p>
-    </div>
-
-    <!-- Название, от, до -->
-    <div class="row g-3 align-items-center p-1">
-        <!-- Название плановой калькуляции -->
-        <div class="mb-3 col-6 col-md-8">
-          <label class="form-label">Название плановой калькуляции:</label>
-          <input 
-            type="text"
-            class="form-control"
-            placeholder="Название калькуляции"
-            v-model="calc.name"
-            v-bind:class="{'is-invalid': !isValidName}"
-          >
-        </div>
-        <!-- от -->
-        <div class="mb-3 col-3 col-md-2">
-          <label class="form-label">От:</label>
-          <input 
-            type="text"
-            class="form-control"
-            placeholder="ДД.ММ.ГГГГ"
-            v-model="calc.fromDate"
-            v-bind:class="{'is-invalid': !isValidDate}"
-          >
-        </div>
-        <!-- до -->
-        <div class="mb-3 col-3 col-md-2">
-          <label class="form-label">До:</label>
-          <input 
-            type="text"
-            class="form-control"
-            placeholder="ДД.ММ.ГГГГ"
-            v-model="calc.toDate"
-            v-bind:class="{'is-invalid': !isValidDate}"
-          >
-        </div>
-    </div>
-    
+  <section id="section" class="row">
+    <!-- Назад, Заголовок, Название, от, до -->
     <!-- Таблица изделий -->
-    <div class="p-1">
-      <table class="table table-hover">
-        <thead class="table-light">
-          <tr>
-            <th scope="col">№</th>
-            <th scope="col">
-              Изделие
-            </th>
-            <th scope="col">
-              шифр
-            </th>
-            <th colspan="2">процент брака</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(prod, i) in calc.products" :key="i">
-            <th scope="row">{{i+1}}</th>
-            <td>
-              <select 
-                class="form-select"
-                v-model="choisedProductsId[i]"
-                v-bind:class="{'is-invalid': !isValidProdct[i]}
-              ">
-                <option  v-for="(prod, i) in allProducts"  :key="i" :value="prod.id" >{{prod.name}}</option>
-              </select>
-            </td>
-            <td>{{prod.cipher}}</td>
-            <td>{{prod.marriage}}</td>
-            <td class="text-end">
-              <button 
-                type="button"
-                class="btn btn-outline-danger"
-                @click="deleteProduct(i)"
-              >
-                x
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <th></th>
-            <td colspan="4">
-              <button 
-                class="btn btn-outline-secondary" 
-                data-bs-toggle="tooltip" 
-                data-bs-placement="right"
-                title="Добавить строку"
-                v-on:click="addRowProduct"
-                id="add-button"
-              >
-                + Изделие
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="col-10">
+      <!-- Назад -->
+      <div class="p-2">
+        <button 
+          type="button" 
+          class="btn btn-outline-success"
+          id="back-button"
+          @click="backToAllCalcs"
+        >
+        ← Назад
+        </button>
+      </div>
+      <!-- Заголовок -->
+      <div class="row ">
+        <p class="h1" v-if="calcToUpdate">Редактировать плановую калькуляцию</p>
+        <p class="h1" v-else>Новая плановая калькуляция</p>
+      </div>
+
+      <!-- Название, от, до -->
+      <div class="row g-3 align-items-center ">
+          <!-- Название плановой калькуляции -->
+          <div class="mb-3 col-6 col-md-8">
+            <label class="form-label">Название плановой калькуляции:</label>
+            <input 
+              type="text"
+              class="form-control"
+              placeholder="Название калькуляции"
+              v-model="calc.name"
+              v-bind:class="{'is-invalid': !isValidName}"
+            >
+          </div>
+          <!-- от -->
+          <div class="mb-3 col-3 col-md-2">
+            <label class="form-label">От:</label>
+            <input 
+              type="text"
+              class="form-control"
+              placeholder="ДД.ММ.ГГГГ"
+              v-model="calc.fromDate"
+              v-bind:class="{'is-invalid': !isValidDate}"
+            >
+          </div>
+          <!-- до -->
+          <div class="mb-3 col-3 col-md-2">
+            <label class="form-label">До:</label>
+            <input 
+              type="text"
+              class="form-control"
+              placeholder="ДД.ММ.ГГГГ"
+              v-model="calc.toDate"
+              v-bind:class="{'is-invalid': !isValidDate}"
+            >
+          </div>
+      </div>
+      
+      <!-- Таблица изделий -->
+      <div class="">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">№</th>
+              <th scope="col">
+                Изделие
+              </th>
+              <th scope="col">
+                шифр
+              </th>
+              <th colspan="2">процент брака</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(prod, i) in calc.products" :key="i">
+              <th scope="row">{{i+1}}</th>
+              <td>
+                <select 
+                  class="form-select"
+                  v-model="choisedProductsId[i]"
+                  v-bind:class="{'is-invalid': !isValidProdct[i]}
+                ">
+                  <option  v-for="(prod, i) in allProducts"  :key="i" :value="prod.id" >{{prod.name}}</option>
+                </select>
+              </td>
+              <td>{{prod.cipher}}</td>
+              <td>{{prod.marriage}}</td>
+              <td class="text-end">
+                <button 
+                  type="button"
+                  class="btn btn-outline-danger"
+                  @click="deleteProduct(i)"
+                >
+                  x
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <th></th>
+              <td colspan="4">
+                <button 
+                  class="btn btn-outline-secondary" 
+                  data-bs-toggle="tooltip" 
+                  data-bs-placement="right"
+                  title="Добавить строку"
+                  v-on:click="addRowProduct"
+                  id="add-button"
+                >
+                  + Изделие
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
 
     <!-- Таблица стоимости материалов -->
-    <div class="p-1">
+    <div class="col-10 col-lg-5">
       <table class="table table-hover">
         <thead class="table-light">
           <tr>
@@ -137,7 +144,7 @@
             <td>
               <input 
                 type="text"
-                class="form-control"
+                class="form-control cost"
                 placeholder="0.0"
                 v-model="material.cost"
               >
@@ -148,7 +155,7 @@
     </div>
 
     <!-- Таблица стоимости заработных плат -->
-    <div class="p-1">
+    <div class="col-10  col-lg-5">
       <table class="table table-hover">
         <thead class="table-light">
           <tr>
@@ -174,7 +181,7 @@
             <td>
               <input 
                 type="text"
-                class="form-control"
+                class="form-control cost"
                 placeholder="0.0"
                 v-model="cost.cost"
               >
@@ -184,8 +191,10 @@
       </table>
     </div>
 
-    <!-- Таблица статей затрат -->
-    <div class="p-1">
+    <!-- Таблица статей затрат --> <!-- Кнопки -->
+    <div class="col-10">
+
+      <!-- Таблица статей затрат -->
       <table class="table table-hover">
         <thead class="table-light">
           <tr>
@@ -217,7 +226,7 @@
             <td>
               <input 
                 type="text"
-                class="form-control"
+                class="form-control cost"
                 placeholder="0.0"
                 v-model="costItemsCost[i]"
               >
@@ -249,23 +258,23 @@
           </tr>
         </tbody>
       </table>
-    </div>
 
-    <!-- Кнопки -->
-    <div class="d-grid gap-2 d-md-flex justify-content-end">
-      <button type="button" class="btn btn-outline-primary" @click="cancelChanges">
-        Отменить изменения
-      </button>
-      <button type="button" class="btn btn-outline-danger" @click="deleteCalc">
-        Удалить
-      </button>
-      <button 
-        type="button" 
-        class="btn btn-outline-success"
-        @click="saveCalc"
-      >
-        Сохранить и рассчитать
-      </button>
+      <!-- Кнопки -->
+      <div class="d-grid gap-2 d-md-flex justify-content-end">
+        <button type="button" class="btn btn-outline-primary" @click="cancelChanges">
+          Отменить изменения
+        </button>
+        <button  v-if="calcToUpdate" type="button" class="btn btn-outline-danger" @click="deleteCalc">
+          Удалить
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-outline-success"
+          @click="saveCalc"
+        >
+          Сохранить и рассчитать
+        </button>
+      </div>
     </div>
   </section>
 </template>
@@ -321,8 +330,11 @@ export default {
       return this.calc.name.length > 0;
     },
     isValidDate() {
-      if(!this.needValidCheck) return true;
-      return moment(this.calc.fromDate, 'DD.MM.YYYY', true).format() <= moment(this.calc.toDate, 'DD.MM.YYYY', true).format()
+      if (!this.needValidCheck) return true;
+      const a = moment(this.calc.fromDate, 'DD.MM.YYYY', true).format();
+      const b = moment(this.calc.toDate, 'DD.MM.YYYY', true).format()
+      if (a == 'Invalid date' || b == 'Invalid date') return false;
+      return a <= b;
     },
     materials() {
       return this.choisedProductsId.filter(id => id !== '');
@@ -505,5 +517,9 @@ export default {
 .is-warning {
   border-width: 2px;
   border-color: gold;
+}
+
+.cost {
+  width: 100px;
 }
 </style>

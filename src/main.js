@@ -110,13 +110,13 @@ const store = createStore({
             {
               id: 1,
               cipher: 'm10101',
-              name: 'material 1',
+              name: 'material material 1',
               cost: 200
             },
             {
               id: 2,
               cipher: 'm20202',
-              name: 'material 2',
+              name: 'material material 2',
               cost: 300
             }
           ],
@@ -231,22 +231,22 @@ const store = createStore({
         {
           id: 1,
           cipher: 'm10101',
-          name: 'material 1',
+          name: 'material material 1',
         },
         {
           id: 2,
           cipher: 'm20202',
-          name: 'material 2',
+          name: 'material material 2',
         },
         {
           id: 3,
           cipher: 'm303003',
-          name: 'material 3',
+          name: 'material material 3',
         },
         {
           id: 4,
           cipher: 'm04040',
-          name: 'material 4',
+          name: 'material material 4',
         },
       ]
       let newMaterials = []

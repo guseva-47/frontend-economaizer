@@ -4,7 +4,7 @@
       <div class="p-1">
         <p class="h1">Профиль пользователя</p>
         
-        <form v-if="!(edit_profile || edit_password)" class="p-1">
+        <div v-if="!(edit_profile || edit_password)" class="p-1">
           <div class="mb-3">
             <p>Логин: {{login}}</p>
             <p>Имя: {{name}}</p>
@@ -30,9 +30,9 @@
           >
             Выйти
           </button>
-        </form>
+        </div>
 
-        <form v-if="edit_profile" class="p-1 col-6 col-lg-4">
+        <div v-if="edit_profile" class="p-1 col-6 col-lg-4">
           <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Логин</label>
             <input 
@@ -58,8 +58,8 @@
 
           <button type="submit" class="btn btn-outline-primary me-3" style="padding-left: 20pt; padding-right: 20pt;">Отмена</button>
           <button type="submit" class="btn btn-outline-primary" style="padding-left: 20pt; padding-right: 20pt;">Сохранить</button>
-        </form>
-        <form v-if="edit_password" class="col-6 col-lg-4">
+        </div>
+        <div v-if="edit_password" class="col-6 col-lg-4">
           <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Старый пароль</label>
             <input
@@ -92,7 +92,7 @@
 
           <button type="submit" class="btn btn-outline-primary me-3" style="padding-left: 20pt; padding-right: 20pt;">Отмена</button>
           <button type="submit" class="btn btn-outline-primary" style="padding-left: 20pt; padding-right: 20pt;">Сохранить</button>
-        </form>
+        </div>
       </div>
     </div>
   </section>

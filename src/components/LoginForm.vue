@@ -4,7 +4,7 @@
       <div class="col-6 col-lg-4 p-1">
         <p class="h1">Вход</p>
         
-        <form class="p-1">
+        <div class="p-1">
           <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Логин</label>
             <input 
@@ -34,7 +34,7 @@
           >
             Войти
           </button>
-        </form>
+        </div>
       </div>
     </div>
   </section>

@@ -4,7 +4,7 @@
     <div class="" v-if="haveUser">
       <nav>
         <div class="nav nav-tabs" id="nav" role="tablist">
-          <div class="container-xxl d-flex flex-row">
+          <div class="container-xxl container-md d-flex flex-row">
             <!-- Калькуляция calc -->
             <button 
               class="nav-link"
@@ -39,7 +39,7 @@
         </div>
       </nav>
       <div  id="nav-tabContent">
-        <div class="container-xxl tab-content">
+        <div class="container-xxl container-md tab-content">
           <div
             class="tab-pane fade"
             v-bind:class="{show: isCalcTab, active: isCalcTab}"
@@ -86,7 +86,7 @@ export default {
     return {
       selected_tab_i: 0,
       isValidLoginOrPassword: false,
-      user: null,
+      user: 'user',
     }
   },
   computed: {

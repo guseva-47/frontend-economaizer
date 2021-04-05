@@ -99,7 +99,7 @@
                 data-bs-toggle="tooltip" 
                 data-bs-placement="right"
                 title="Добавить строку"
-                v-on:click="addRow"
+                v-on:click="addRowProduct"
                 id="add-button"
               >
                 + Изделие
@@ -184,6 +184,73 @@
       </table>
     </div>
 
+    <!-- Таблица статей затрат -->
+    <div class="p-1">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">№</th>
+            <th scope="col">
+              Статья затрат
+            </th>
+            <th scope="col" colspan="1">
+              шифр
+            </th>
+            <th scope="col" colspan="2">
+              стоимость
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(costItem, i) in calc.costItems" :key="i">
+            <th scope="row">{{i+1}}</th>
+            <td>
+              <select 
+                class="form-select"
+                v-model="choisedCostItemsId[i]"
+                v-bind:class="{'is-invalid': !isValidCostItems[i]}
+              ">
+                <option  v-for="(ci, i) in allCostItems"  :key="i" :value="ci.id" >{{ci.name}}</option>
+              </select>
+            </td>
+            <td>{{costItem.cipher}}</td>
+            <td>
+              <input 
+                type="text"
+                class="form-control"
+                placeholder="0.0"
+                v-model="costItem.cost"
+              >
+            </td>
+            <td class="text-end">
+              <button 
+                type="button"
+                class="btn btn-outline-danger"
+                @click="deleteCostItem(i)"
+              >
+                x
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <th></th>
+            <td colspan="4">
+              <button 
+                class="btn btn-outline-secondary" 
+                data-bs-toggle="tooltip" 
+                data-bs-placement="right"
+                title="Добавить строку"
+                v-on:click="addRowCostItems"
+                id="add-button"
+              >
+                + Статья затрат
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Кнопки -->
     <div class="d-grid gap-2 d-md-flex justify-content-end">
       <button type="button" class="btn btn-outline-primary" @click="cancelChanges">
@@ -224,30 +291,29 @@ export default {
         products: [],
         materials: [],
         costs: [],
+        costItems: [],
       },
 
       needValidCheck: false,
       // id изделий, выбранных пользователем для калькуляции
       choisedProductsId: [],
       allProducts: [],
+      allCostItems: [],
+      choisedCostItemsId: [],
       isValidProdct:[],
+      isValidCostItems:[],
+      // costItemsCost: []
     }
   },
   created: async function() {
     
     await this.getProducts();
-    this.allProducts = this.$store.state.products;
+    this.allProducts = clone(this.$store.state.products);
 
-    if (this.calcToUpdate !== null) {
-      this.calc = clone(this.calcToUpdate);
-    }
-    else {
-      this.calc.id = -1;
-      this.calc.products = []
-      this.calc.materials = []
-      this.calc.costs = []
-    }
-    this.calc.products.forEach(prod => this.choisedProductsId.push(prod.id))
+    await this.getCostItems();
+    this.allCostItems = clone(this.$store.state.сostItems);
+    
+    this.initCalc(this.calcToUpdate);
   },
   computed: {
     isValidName() {
@@ -260,6 +326,9 @@ export default {
     },
     materials() {
       return this.choisedProductsId.filter(id => id !== '');
+    },
+    costItems() {
+      return this.choisedCostItemsId.filter(id => id !== '')
     }
   },
   watch: {
@@ -269,7 +338,7 @@ export default {
         let newProd = this.allProducts.find(item => item.id == this.choisedProductsId[i])
         this.calc.products[i] = newProd;
         if (!newProd) {          
-          this.choisedProductsId = [this.allProducts[0].id];
+          this.choisedProductsId[i] = this.allProducts[0].id;
           this.calc.products[i] = this.allProducts[0];
         }
       }
@@ -281,7 +350,18 @@ export default {
       this.calc.materials = this.updateCost(newMaterials, this.calc.materials);
       this.calc.costs = this.updateCost(newCosts, this.calc.costs)
 
-      this.isValidProdct = this.updateValidProd(this.choisedProductsId);
+      this.isValidProdct = this.isValidArr(this.choisedProductsId);
+    },
+    costItems() {
+      for(let i = 0; i < this.choisedCostItemsId.length; i++) {
+        let newCostItem = this.allCostItems.find(item => item.id == this.choisedCostItemsId[i])
+        this.calc.costItems[i] = newCostItem;
+        if(!newCostItem){
+          this.choisedCostItemsId[i] = this.allCostItems[0].id
+          this.calc.costItems[i] = this.allCostItems[i];
+        }
+      }
+      this.isValidCostItems = this.isValidArr(this.choisedCostItemsId);
     }
   },
   methods: {
@@ -305,16 +385,17 @@ export default {
       // передать калькуляцию в форму
       this.backToCalc(this.calc);
     },
-    addRow() {
+    addRowProduct() {
       this.choisedProductsId.push(this.allProducts[0].id);
-      this.calc.products.push(
-        {
-          id: '',
-          names: '',
-          cipher: '',
-          marriage: ''
-        }
-      ); 
+      this.calc.products.push(this.allProducts[0]); 
+    },
+    addRowCostItems() {
+      // todo мб нужно все-таки разрешать несколько одинаковых статей затрат и суммировать, если статьи повторяются
+      // тогда надо заводить отдельный массив стоимостей по статьям затрат, слдить за ним не нужно, только добавлять 
+      const newCost = this.allCostItems[0];
+      if(newCost.cost === undefined) newCost.cost = 0;
+      this.choisedCostItemsId.push(newCost.id);
+      this.calc.costItems.push(newCost);
     },
     updateCost(newMaterials, oldMaterials) {
       if(!oldMaterials) return newMaterials;
@@ -327,7 +408,7 @@ export default {
       }
       return newMaterials;
     },
-    updateValidProd(arr) {
+    isValidArr(arr) {
       const result = arr.map(() => true);
       for(let i = arr.length - 1; i > 0; i--){
         let isOk = true;
@@ -340,13 +421,21 @@ export default {
       return result;
     },
 
-    async deleteProduct(i) {
+    deleteProduct(i) {
       this.choisedProductsId.splice(i, 1);
       this.calc.products.splice(i, 1);
     },
+    deleteCostItem(i) {
+      this.choisedCostItemsId.splice(i, 1);
+      this.calc.costItems.splice(i, 1);
+    },
+
 
     async getProducts() {
       await this.$store.dispatch('getAllProducts');
+    },
+    async getCostItems() {
+      await this.$store.dispatch('getAllCostItems');
     },
 
     async getMaterials(productsId) {
@@ -357,8 +446,11 @@ export default {
     },
 
     cancelChanges() {
-      if (this.calcToUpdate !== null) {
-        this.calc = clone(this.calcToUpdate);
+      this.initCalc(this.calcToUpdate);
+    },
+    initCalc(originalCalc) {
+      if (originalCalc !== null) {
+        this.calc = clone(originalCalc);
       }
       else {
         this.calc.id = -1;
@@ -370,11 +462,15 @@ export default {
         this.calc.costs = [];
         this.calc.marriage = '';
         this.calc.products = [];
+        this.calc.costItems = [];
       }
       this.choisedProductsId = [];
+      this.choisedCostItemsId = [];
       this.calc.products.forEach(prod => this.choisedProductsId.push(prod.id))
+      this.calc.costItems.forEach(item => this.choisedCostItemsId.push(item.id));
       this.needValidCheck = false;
-      this.isValidProdct = this.updateValidProd(this.choisedProductsId);
+      this.isValidProdct = this.isValidArr(this.choisedProductsId);
+      this.isValidCostItems = this.isValidArr(this.choisedCostItemsId);
     }
   }
 }

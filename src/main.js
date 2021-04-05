@@ -19,6 +19,7 @@ const store = createStore({
         marriage: '',
       }
     ],
+    сostItems: [],
 
     materials: {
       id: '',
@@ -63,6 +64,9 @@ const store = createStore({
     },
     setProducts(state, products) {
       state.products = products;
+    },
+    setCostItems(state, сostItems) {
+      state.сostItems = сostItems;
     },
     setMaterials(state, materials) {
       state.materials = materials;
@@ -117,9 +121,9 @@ const store = createStore({
               cost: 300
             }
           ],
-          stati: [
-            { name: 'statia 1', cipher: '01010', cost: '20'},
-            { name: 'statia 2', cipher: '0220', cost: '220'},
+          costItems: [
+            { id: 2, name: 'сostItem 2', cipher: '020202' },
+            { id: 3, name: 'сostItem 3', cipher: '030303' },
           ]
         },
   
@@ -137,9 +141,9 @@ const store = createStore({
             { name: 'izdelie 22', cipher: '02220', cost: 410},
             { name: 'izdelie 33', cipher: '03030', cost: 4150},
           ],
-          stati: [
-            { name: 'statia 11', cipher: '01010'},
-            { name: 'statia 22', cipher: '0220'},
+          costItems: [
+            { id: 2, name: 'сostItem 2', cipher: '020202' },
+            { id: 3, name: 'сostItem 3', cipher: '030303' },
           ]
         }
       ];
@@ -168,6 +172,32 @@ const store = createStore({
         },
       ]
       commit('setProducts', prod);
+    },
+    
+    async getAllCostItems({commit}) {
+      const сostItems = [
+        {
+          id: 1,
+          name: 'сostItem 1',
+          cipher: '101010'
+        },
+        {
+          id: 2,
+          name: 'сostItem 2',
+          cipher: '020202'
+        },
+        {
+          id: 3,
+          name: 'сostItem 3',
+          cipher: '030303'
+        },
+        {
+          id: 4,
+          name: 'сostItem 4',
+          cipher: '040404040'
+        },
+      ]
+      commit('setCostItems', сostItems);
     },
 
     async getMaterials({commit}, productsId) {

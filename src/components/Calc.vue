@@ -19,6 +19,7 @@
       </div>
     </div>
     
+    <!-- Статьи затрат -->
     <div class="p-1">
       <table class="table table-hover">
         <thead class="table-light">

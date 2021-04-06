@@ -102,7 +102,7 @@
                   @click="sortCalcsItems(3)"
                 >{{arrov}}</button>
               </th>
-              <th></th>
+              <!-- <th></th> -->
             </tr>
           </thead>
           <tbody>
@@ -111,15 +111,15 @@
               <td @click="showCalculation(calc)">{{calc.name}}</td>
               <td>{{calc.fromDate}}</td>
               <td>{{calc.toDate}}</td>
-              <td>
+              <!-- <td>
                 <div class="dropdown">
-                  <button class="btn btn-outline-secondary" data-bs-toggle="dropdown" style="padding-inline:3px;"> ⁝ </button>
+                  <button class="btn btn-outline-secondary" data-bs-toggle="dropdown" style="padding-inline:3px;"> ⁝ </button> -->
                   <!-- <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Рецепт подробно</a></li>
                     <li><a class="dropdown-item" href="#">Удалить заказ</a></li>
                   </ul> -->
-                </div>
-              </td>
+                <!-- </div>
+              </td> -->
             </tr>
           </tbody>
         </table>
@@ -156,7 +156,7 @@ export default {
       // isUp: true--по возростанию, false--по убыванию
       isUp: false,
 
-      isCreateOrUpdate: true,
+      isCreateOrUpdate: false,
       isCalc: false,
       calcToShow: null,
       

@@ -86,7 +86,7 @@ export default {
     return {
       selected_tab_i: 0,
       isValidLoginOrPassword: false,
-      user: 'user',
+      user: null,
     }
   },
   computed: {
